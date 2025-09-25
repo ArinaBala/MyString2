@@ -1,255 +1,248 @@
 #include "MyString.h"
 #include <cstring>
 
-int MyString::objectCount = 0;
+int MyString::objectCounter = 0;
 
 MyString::MyString()
 {
-    length = 80;
-    str = new char[length + 1] {};
-    objectCount++;
+    size = 80;
+    data = new char[size] {};
+    objectCounter++;
 }
 
-MyString::MyString(int size)
+MyString::MyString(int s)
 {
-    length = size;
-    str = new char[length + 1] {};
-    objectCount++;
+    size = s;
+    data = new char[size] {};
+    objectCounter++;
 }
 
-MyString::MyString(const char* st)
+MyString::MyString(const char* text)
 {
-    length = strlen(st);
-    str = new char[length + 1];
-    strcpy_s(str, length + 1, st);
-    objectCount++;
-}
-
-MyString::MyString(const MyString& obj)
-{
-    length = obj.length;
-    str = new char[length + 1];
-    strcpy_s(str, length + 1, obj.str);
-    objectCount++;
-    cout << "Copy constructor\n";
-}
-
-MyString::MyString(MyString&& obj)
-{
-    length = obj.length;
-    str = obj.str;
-    obj.length = 0;
-    obj.str = nullptr;
-    objectCount++;
-    cout << "Move constructor\n";
+    size = strlen(text);
+    data = new char[size + 1];
+    strcpy_s(data, size + 1, text);
+    objectCounter++;
 }
 
 MyString::~MyString()
 {
-    delete[] str;
-    objectCount--;
+    delete[] data;
+    data = nullptr;
+    size = 0;
+    objectCounter--;
 }
 
 void MyString::Print()
 {
-    if (str)
-    {
-        cout << str << endl;
+    cout << data << endl;
+}
+
+void MyString::CopyFrom(const MyString& object)
+{
+    if (this == &object) 
+    { 
+        return;
     }
-    else
+    delete[] data;
+    size = object.size;
+    data = new char[size + 1];
+    strcpy_s(data, size + 1, object.data);
+}
+
+MyString::MyString(const MyString& object)
+{
+    size = object.size;
+    data = new char[size + 1];
+    strcpy_s(data, size + 1, object.data);
+    objectCounter++;
+}
+
+MyString::MyString(MyString&& object)
+{
+    data = object.data;
+    size = object.size;
+
+    object.data = nullptr;
+    object.size = 0;
+}
+
+bool MyString::Contains(const char* sub)
+{
+    return strstr(this->data, sub) != nullptr;
+}
+
+int MyString::FindChar(char c)
+{
+    for (int i = 0; i < size; i++)
     {
-        cout << "Empty" << endl;
-    }
-}
-
-bool MyString::MyStrStr(const char* s)
-{
-    return strstr(str, s) != nullptr;
-}
-
-void MyString::MyStrcpy(MyString& obj)
-{
-    delete[] obj.str;
-    obj.length = length;
-    obj.str = new char[length + 1];
-    strcpy_s(obj.str, length + 1, str);
-}
-
-int MyString::MyChr(char c)
-{
-    for (int i = 0; i < length; i++)
-    {
-        if (str[i] == c)
-            return i;
+        if (data[i] == c) return i;
     }
     return -1;
 }
 
-int MyString::MyStrLen()
+int MyString::Length()
 {
-    return length;
+    return strlen(data);
 }
 
-void MyString::MyStrCat(MyString& b)
+void MyString::Concat(MyString& object)
 {
-    char* temp = new char[length + b.length + 1];
-    strcpy_s(temp, length + 1, str);
-    strcat_s(temp, length + b.length + 1, b.str);
-    delete[] str;
-    str = temp;
-    length += b.length;
+    int lenA = strlen(this->data);
+    int lenB = strlen(object.data);
+    char* temp = new char[lenA + lenB + 1];
+
+    strcpy_s(temp, lenA + lenB + 1, this->data);
+    strcat_s(temp, lenA + lenB + 1, object.data);
+
+    delete[] this->data;
+    this->data = temp;
+    this->size = lenA + lenB;
 }
 
-void MyString::MyDelChr(char c)
+void MyString::RemoveChar(char c)
 {
-    int newLen = 0;
-    for (int i = 0; i < length; i++)
-    {
-        if (str[i] != c)
+    int keep = 0;
+    for (int i = 0; i < size; i++)
         {
-            str[newLen++] = str[i];
+
+        if (data[i] != c)
+        { 
+            keep++;
         }
-    }
-    str[newLen] = '\0';
-    length = newLen;
+        }
+
+    char* temp = new char[keep + 1];
+    int j = 0;
+    for (int i = 0; i < size; i++)
+        {
+        if (data[i] != c) 
+        {
+            temp[j++] = data[i];
+        }
+
+    temp[j] = '\0';
+
+    delete[] data;
+    data = temp;
+    size = keep;
 }
 
-int MyString::MyStrCmp(MyString& b)
+int MyString::Compare(MyString& object)
 {
-    int res = strcmp(str, b.str);
-    if (res < 0) return -1;
-    if (res > 0) return 1;
+    int cmp = strcmp(this->data, object.data);
+    
+    if (cmp < 0) 
+    {
+        return -1;
+    }
+    if (cmp > 0) 
+    {
+        return 1;
+    }
     return 0;
 }
 
-int MyString::GetObjectCount()
+void MyString::ShowCount()
 {
-    return objectCount;
+    cout << "Objects: " << objectCounter << endl;
 }
 
+MyString MyString::operator+(MyString& object)
+{
+    MyString temp;
+    delete[] temp.data;
+    temp.size = this->size + object.size;
+    temp.data = new char[temp.size + 1];
 
+    strcpy_s(temp.data, this->size + 1, this->data);
+    strcat_s(temp.data, temp.size + 1, object.data);
+    return temp;
+}
 
+MyString MyString::operator-(MyString& object)
+{
+    MyString temp(*this);
+    for (int i = 0; i < object.size; i++)
+        {
+        temp.RemoveChar(object.data[i]);
+        }
+    return temp;
+}
 
+MyString MyString::operator*(int times)
+{
+    if (times <= 0)
+    {
+        return MyString("");
+    }
+    MyString temp;
+    delete[] temp.data;
+    temp.size = this->size * times;
+    temp.data = new char[temp.size + 1];
+    temp.data[0] = '\0';
 
+    for (int i = 0; i < times; i++)
+        {
+        strcat_s(temp.data, temp.size + 1, this->data);
+        }
+    return temp;
+}
 
-// Операторы 
 MyString& MyString::operator+=(const char* s)
 {
-    if (!s)
-    {
-        return *this;
-    }
+    int addLen = strlen(s);
+    char* temp = new char[size + addLen + 1];
 
-    int sLen = strlen(s);
-    char* temp = new char[length + sLen + 1];
-    strcpy_s(temp, length + 1, str);
-    strcat_s(temp, length + sLen + 1, s);
+    strcpy_s(temp, size + 1, data);
+    strcat_s(temp, size + addLen + 1, s);
 
-    delete[] str;
-    str = temp;
-    length += sLen;
-
+    delete[] data;
+    data = temp;
+    size += addLen;
     return *this;
 }
 
 MyString& MyString::operator-=(const char* s)
 {
-    if (!str || !s)
-    {
-        return *this;
-    }
-
-    char* pos = strstr(str, s);
-    if (pos)
-    {
-        int sLen = strlen(s);
-        memmove(pos, pos + sLen, strlen(pos + sLen) + 1);
-        length -= sLen;
-    }
-
+    int rm = strlen(s);
+    
+    for (int i = 0; i < rm; i++)
+        {
+        RemoveChar(s[i]);
+        }
     return *this;
 }
 
-MyString& MyString::operator++() // добавляем запятую
+MyString& MyString::operator++()
 {
-    char* temp = new char[length + 2]; // символ + '\0'
-    strcpy_s(temp, length + 1, str);
-    temp[length] = ',';
-    temp[length + 1] = '\0';
+    char* temp = new char[size + 2];
+    strcpy_s(temp, size + 2, data);
+    temp[size] = ' ';
+    temp[size + 1] = '\0';
 
-    delete[] str;
-    str = temp;
-    length += 1;
-
+    delete[] data;
+    data = temp;
+    size++;
     return *this;
 }
 
-MyString& MyString::operator--() // удаляем последний символ
+MyString& MyString::operator--()
 {
-    if (length > 0)
+    if (size > 0)
     {
-        str[length - 1] = '\0';
-        length--;
+        data[size - 1] = '\0';
+        size--;
     }
     return *this;
 }
 
-
-MyString MyString::operator++(int)
+bool MyString::operator==(MyString& object)
 {
-    MyString temp(*this);
-    ++(*this);
-    return temp;
+    return strcmp(this->data, object.data) == 0;
 }
 
-MyString MyString::operator--(int)
+bool MyString::operator>(MyString& object)
 {
-    MyString temp(*this);
-    --(*this);
-    return temp;
+    return strcmp(this->data, object.data) > 0;
 }
-
-
-bool MyString::operator==(MyString& other)
-{
-    if (!str && !other.str)
-    {
-        return true;
-    }
-    if (!str || !other.str)
-    {
-        return false;
-    }
-    if (strcmp(str, other.str) == 0)
-    {
-        return true;
-    }
-    return false;
-}
-
-bool MyString::operator>(MyString& other)
-{
-    if (!str)
-    {
-        return false;
-    }
-    if (!other.str)
-    {
-        return true;
-    }
-    if (strcmp(str, other.str) > 0)
-    {
-        return true;
-    }
-    return false;
-}
-
-bool MyString::operator!() // проверка пустой строки
-{
-    if (length == 0 || str[0] == '\0')
-    {
-        return true;
-    }
-    return false;
-}
-
