@@ -4,40 +4,40 @@ using namespace std;
 
 class MyString
 {
-private:
-    char* str;
-    int length;
-    static int objectCount;
+    char* data;
+    int size;
+    static int objectCounter;  
 
 public:
-    
     MyString();
-    MyString(int size);
-    MyString(const char* st);
-    MyString(const MyString& obj);
-    MyString(MyString&& obj);
+    MyString(int s);
+    MyString(const char* text);
     ~MyString();
 
+    MyString(const MyString& object);   
+    MyString(MyString&& object);        
+
     void Print();
-    bool MyStrStr(const char* s);
-    void MyStrcpy(MyString& obj);
-    int MyChr(char c);
-    int MyStrLen();
-    void MyStrCat(MyString& b);
-    void MyDelChr(char c);
-    int MyStrCmp(MyString& b);
-    MyString operator+(const MyString& b);
+    void CopyFrom(const MyString& object);   
+    bool Contains(const char* sub);          
+    int  FindChar(char c);                   
+    int  Length();                           
+    void Concat(MyString& object);           
+    void RemoveChar(char c);                 
+    int  Compare(MyString& object);         
 
-    static int GetObjectCount();
+    static void ShowCount();                 
 
-    
+    MyString operator+(MyString& object);
+    MyString operator-(MyString& object);
+    MyString operator*(int times);
+
     MyString& operator+=(const char* s);
     MyString& operator-=(const char* s);
-    MyString& operator++(); 
-    MyString& operator--(); 
-    MyString operator++(int);
-    MyString operator--(int);
-    bool operator==(MyString& other); 
-    bool operator>(MyString& other);  
-    bool operator!();                 
+
+    MyString& operator++();  
+    MyString& operator--();   
+
+    bool operator==(MyString& object);
+    bool operator>(MyString& object);
 };
