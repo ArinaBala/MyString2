@@ -4,29 +4,31 @@ using namespace std;
 
 int main()
 {
-    cout << "Objects before: " << MyString::GetObjectCount() << endl;
+    cout << "Objects before: ";
+    MyString::ShowCount();
 
     MyString a("Hello");
     MyString b("world");
 
-    cout << "Objects now: " << MyString::GetObjectCount() << endl;
+    cout << "Objects now: ";
+    MyString::ShowCount();
 
-    a++;          // Hello,
+    ++a;          // Hello + пробел
     a.Print();
 
-    a--;          // Hello
+    --a;          // убрали последний символ
     a.Print();
 
     a += "world"; // Helloworld
     a.Print();
 
-    a -= "lo";    // Helworld
+    a -= "lo";    // Heworld
     a.Print();
 
-    cout << (a == b) << endl;
-    cout << (a > b) << endl;
+    cout << "a == b ? " << (a == b) << endl;
+    cout << "a > b  ? " << (a > b) << endl;
 
-    if (!a)
+    if (a.Length() == 0)   
     {
         cout << "String is empty\n";
     }
@@ -35,6 +37,7 @@ int main()
         cout << "String is not empty\n";
     }
 
-    cout << "Objects after: " << MyString::GetObjectCount() << endl;
+    cout << "Objects after: ";
+    MyString::ShowCount();
     return 0;
 }
