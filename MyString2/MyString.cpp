@@ -104,30 +104,28 @@ void MyString::RemoveChar(char c)
 {
     int keep = 0;
     for (int i = 0; i < size; i++)
-        {
-
+    {
         if (data[i] != c)
-        { 
+        {
             keep++;
         }
-        }
+    }
 
     char* temp = new char[keep + 1];
     int j = 0;
     for (int i = 0; i < size; i++)
-        {
-        if (data[i] != c) 
+    {
+        if (data[i] != c)
         {
             temp[j++] = data[i];
         }
-
+    }
     temp[j] = '\0';
 
     delete[] data;
     data = temp;
     size = keep;
 }
-
 int MyString::Compare(MyString& object)
 {
     int cmp = strcmp(this->data, object.data);
